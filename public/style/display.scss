@@ -1,0 +1,335 @@
+/**
+ * Body CSS
+ */
+
+html,
+body {
+  height: 100%;
+  background: url('/image/display-bg.png') center top no-repeat;
+  background-size: cover;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body,
+input,
+textarea,
+button {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
+
+  font-family: "Segoe UI", "Microsoft Yahei", "SimHei", "SimKai", sans-serif;
+}
+
+@font-face {
+  font-family: 'icomoon';
+  src:
+          url('/fonts/icomoon.ttf?voh8iq') format('truetype'),
+          url('/fonts/icomoon.woff?voh8iq') format('woff'),
+          url('/fonts/icomoon.svg?voh8iq#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.icon-eog:before {
+  content: "\e900";
+
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.twt-logo, .tju-logo {
+  height: 80px;
+  width: 216px;
+
+  text-align: center;
+
+  img {
+    height: 100%;
+  }
+}
+
+header {
+  position: absolute;
+  box-sizing: border-box;
+  height: 100vh;
+  width: 100vw;
+
+  transition: transform 2.5s ease-in-out, height 2.5s ease-in-out;
+  transform-origin: center top;
+  transition-delay: 1s;
+
+  padding: 0 0 130px;
+
+  display: table;
+  vertical-align: middle;
+
+  h2 {
+    vertical-align: middle;
+    display: table-cell;
+
+    font-size: 48px;
+    font-weight: normal;
+    padding: 0 10vw 100px;
+    margin: 0;
+
+    color: #cc0461;
+    text-align: center;
+  }
+}
+
+footer {
+  position: absolute;
+  bottom: 160px;
+  transition: transform 2.5s ease-in-out;
+  transition-delay: 1s;
+
+  width: 100%;
+  text-align: center;
+  .twt-logo, .tju-logo {
+    display: inline-block;
+    padding: 0 20px;
+  }
+}
+
+#ctrl {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 9999;
+  padding: 10px;
+
+  a {
+    color: rgba(255,255,255,.5);
+    font-size: 24px;
+    text-decoration: none;
+
+    margin-right: 10px;
+    //text-shadow: 0 0 2px rgba(255,255,255,.6);
+  }
+}
+
+.page {
+  position: absolute;
+  width: 100vw;
+  top: 130px;
+  background: rgba(255,255,255,.8);
+  bottom: 130px;
+  opacity: 0;
+
+  display: -webkit-box;
+  -webkit-box-align: center;
+
+  transition: opacity 1s ease-in-out;
+}
+
+.panel {
+  transform: translateX(-20px);
+  transition: opacity .6s linear, transform .6s linear;
+  opacity: 0;
+  padding: 30px;
+  margin: 0 auto;
+  box-sizing: border-box;
+
+  &.active {
+    transform: translateX(0px);
+    opacity: 1;
+  }
+
+  h3 {
+    background-image: linear-gradient(to right, #cc0461, #cc0461 20%, rgba(#cc0461, 0));
+    margin: 0 0 20px;
+
+    font-size: 24px;
+    padding: 5px 10px;
+    color: #fff;
+
+    width: 200px;
+  }
+
+  .panel-left {
+    float: left;
+    width: 220px;
+  }
+
+  .panel-right {
+    float: left;
+    width: 270px;
+    padding: 0 0 0 200px;
+  }
+
+  &.panel-user {
+    width: 750px;
+    padding-bottom: 150px;
+
+    .user-info {
+      font-size: 24px;
+      height: 40px;
+    }
+    .user-avatar img {
+      height: 270px;
+      width: 180px;
+    }
+  }
+
+  &.panel-list {
+    width: 100%;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 8px;
+      font-size: 16px;
+      text-align: center;
+
+      border-bottom: 2px solid transparent;
+      transition: border .6s linear;
+    }
+    tr:last-child td {
+      border: 0;
+    }
+
+    .result {
+      font-weight: bold;
+    }
+
+    &.active {
+      th, td {
+        border-color: #cc0461;
+      }
+    }
+  }
+}
+
+body.show-page {
+  header {
+    height: 400px;
+    transform: scale(.75);
+
+    transition-delay: 0s;
+    transition-duration: 1.6s;
+  }
+
+  footer {
+    transform: translate(0, 135px);
+
+    transition-delay: 0s;
+  }
+
+  .page {
+    opacity: 1;
+    left: 0;
+
+    transition-delay: .4s;
+  }
+}
+
+@import 'steps';
+
+$vote-size: 270px;
+$circle-size: $vote-size;
+$result-size: $circle-size - 30px * 2;
+
+.user-score {
+  display: block;
+  position: relative;
+  width: $vote-size;
+  height: $vote-size;
+  margin: 40px auto 30px;
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  .left, .right {
+    position: absolute;
+    z-index: 20;
+
+    width: $circle-size;
+    height: $circle-size;
+    overflow: hidden;
+    box-sizing: border-box;
+
+    .wrap {
+      transform: translate(0);
+    }
+
+    .circle {
+      overflow: hidden;
+
+      border: 40px solid #cc0461;
+      border-radius: 50%;
+      width: $circle-size;
+      height: $circle-size;
+      box-sizing: border-box;
+      opacity: 0;
+    }
+  }
+
+  .left {
+    z-index: 22;
+    .circle {
+      transform: rotate(180deg);
+      transition: transform 0s ease-out;
+    }
+  }
+
+  .right {
+    -webkit-clip-path: inset(0 0 0 $circle-size/2+0.5);
+    clip-path: inset(0 0 0 $circle-size/2+0.5);
+
+    .circle {
+      transition: transform 0s ease-in;
+    }
+  }
+
+  /*
+  .right:before {
+    content: ' ';
+    display: block;
+    position: absolute;
+    z-index: 21;
+    top: 0; left: 0;
+    background: #d9f0f5;
+
+    height: $circle-size;
+    width: $circle-size/2;
+  }
+  */
+
+  .circle {
+    -webkit-clip-path: inset(0 $circle-size/2-0.5 0 0);
+    clip-path: inset(0 $circle-size/2-0.5 0 0);
+  }
+
+  .result {
+    position: absolute;
+    z-index: 32;
+
+    top: ($vote-size - $result-size) / 2;
+    left: ($vote-size - $result-size) / 2;
+    width: $result-size;
+    height: $result-size;
+    line-height: $result-size;
+
+    font-size: 72px;
+    text-align: center;
+
+    span {
+      font-size: 48px;
+    }
+  }
+}

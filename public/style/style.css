@@ -1,0 +1,348 @@
+/**
+ * Body CSS
+ */
+
+html,
+body {
+    height: 100%;
+    background-color: #eee;
+}
+
+html,
+body,
+input,
+textarea,
+button {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
+
+    font-family: "Segoe UI Light", "Segoe UI", "Microsoft Yahei Light", "Microsoft Yahei", "SimHei", "SimKai", sans-serif;
+}
+
+
+/**
+ * Layout CSS
+ */
+
+#header {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 2;
+    transition: left 0.2s;
+}
+
+#sidedrawer {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 200px;
+    left: -200px;
+    overflow: auto;
+    z-index: 2;
+    background-color: #fff;
+    transition: transform 0.2s;
+}
+
+#content-wrapper {
+    min-height: 100%;
+    overflow-x: hidden;
+    margin-left: 0;
+    transition: margin-left 0.2s;
+
+    /* sticky bottom */
+    margin-bottom: -80px;
+    padding-bottom: 80px;
+}
+
+@media (min-width: 1500px) {
+    .mui-container {
+        max-width: 1470px;
+    }
+    .mui-col-lg-3 {
+        width: 290px;
+    }
+    .mui-col-lg-9 {
+        float: none;
+        width: auto;
+        overflow: hidden;
+    }
+}
+
+@media (min-width: 1800px) {
+    .mui-container {
+        max-width: 1770px;
+    }
+}
+
+#controlWrap .mui-table .mui-btn {
+    padding: 0 10px;
+}
+#controlWrap .mui-table .mui-textfield {
+    margin: 0;
+    padding: 0;
+}
+#controlWrap .mui-table .mui-textfield input {
+    width: 80px;
+}
+
+#footer {
+    height: 80px;
+    margin-left: 0px;
+    transition: margin-left 0.2s;
+}
+
+@media (min-width: 768px) {
+    #header {
+        left: 200px;
+    }
+
+    #sidedrawer {
+        transform: translate(200px);
+    }
+
+    #content-wrapper {
+        margin-left: 200px;
+    }
+
+    #footer {
+        margin-left: 200px;
+    }
+
+    body.hide-sidedrawer #header {
+        left: 0;
+    }
+
+    body.hide-sidedrawer #sidedrawer {
+        transform: translate(0px);
+    }
+
+    body.hide-sidedrawer #content-wrapper {
+        margin-left: 0;
+    }
+
+    body.hide-sidedrawer #footer {
+        margin-left: 0;
+    }
+}
+
+
+/**
+ * Toggle Sidedrawer
+ */
+#sidedrawer.active {
+    transform: translate(200px);
+}
+
+
+/**
+ * Header CSS
+ */
+
+.sidedrawer-toggle {
+    color: #fff;
+    cursor: pointer;
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.sidedrawer-toggle:hover {
+    color: #fff;
+    text-decoration: none;
+}
+
+
+/**
+ * Sidedrawer CSS
+ */
+
+#sidedrawer-brand {
+    padding-left: 20px;
+}
+
+#sidedrawer ul {
+    list-style: none;
+}
+
+#sidedrawer > ul {
+    padding-left: 0px;
+}
+
+#sidedrawer > ul > li:first-child {
+    padding-top: 15px;
+}
+
+#sidedrawer strong {
+    display: block;
+    padding: 15px 22px;
+    cursor: pointer;
+}
+
+#sidedrawer strong:hover {
+    background-color: #E0E0E0;
+}
+
+#sidedrawer strong + ul > li {
+    padding: 6px 0px;
+}
+
+
+/**
+ * Footer CSS
+ */
+
+#footer {
+    background-color: #0288D1;
+    color: #fff;
+}
+
+#footer a {
+    color: #fff;
+    text-decoration: underline;
+}
+
+/**
+ *
+ */
+
+.mui--text-dark-secondary {
+    font-size: 14px;
+}
+
+.twt-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.twt-list li {
+    margin: 10px 0;
+}
+
+.twt-label {
+    display: inline-block;
+    background: #2196F3;
+    color: #fff;
+    padding: 2px 0;
+    border-radius: 2px;
+    width: 28px;
+    text-align: center;
+}
+
+.avatar {
+    border: 5px solid #fff;
+    border-radius: 50%;
+}
+
+.avatar-50 {
+    width: 50px;
+    height: 50px;
+    box-shadow: 0 0 5px rgba(0,0,0,.5);
+}
+.avatar-100 {
+    width: 100px;
+    height: 100px;
+    box-shadow: 0 0 10px rgba(0,0,0,.5);
+    margin: 20px 0;
+}
+
+@keyframes avatar-loading {
+    0% { opacity: .8 }
+    50% { opacity: .2 }
+    100% { opacity: .8 }
+}
+.avatar.loading {
+    animation: avatar-loading 1.5s ease-in-out infinite;
+}
+
+.player-wrap {
+    padding-left: 15px;
+    overflow: hidden;
+    width: 190px;
+    min-height: 50px;
+}
+
+.btn-wrap .mui-btn {
+    padding: 0 18px;
+    margin-bottom: 0;
+}
+
+.mui-panel {
+    position: relative;
+}
+
+.mui-panel.selected {
+    border: 2px solid #2196F3;
+    padding: 13px;
+}
+
+.mui-panel.selected .wrap:after {
+    content: '√';
+    bottom: 5px;
+    right: 5px;
+
+    color: #2196F3;
+    position: absolute;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.mui-panel.out .wrap:before {
+    content: '出局';
+    top: 7px;
+    right: 7px;
+
+    color: #F44336;
+    position: absolute;
+    font-size: 14px;
+}
+
+.mui-panel.selected.out .wrap:before {
+    top: 5px;
+    right: 5px;
+}
+
+.mui-tabs__bar>li>a {
+    cursor: pointer;
+}
+
+.twt-print {
+    width: 210mm;
+    padding: 15px;
+    margin: 20px auto;
+    background: #FFF;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,.16),0 0 2px 0 rgba(0,0,0,.12);
+}
+
+.twt-table {
+    min-width: 70%;
+    margin: 50px auto;
+}
+
+.twt-table th, .twt-table td {
+    text-align: center;
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+}
+
+@media print {
+    @page {
+        margin: 0;
+    }
+
+    html, body { background: #fff }
+
+    .twt-print {
+        width: 100%;
+        padding: 10mm;
+        margin: 0;
+        box-shadow: none;
+        page-break-after: always;
+    }
+
+    .twt-table th, .twt-table td {
+        border-color: #000;
+    }
+}

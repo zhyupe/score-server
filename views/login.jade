@@ -1,0 +1,37 @@
+extends layouts/public
+
+block content
+  .mui-container
+    .mui-row(style="padding-top:150px")
+      .mui-panel.mui-col-md-4.mui-col-md-offset-4
+        form#loginForm(action="/login", method="post")
+          legend 登录
+          p.mui--text-accent
+            | 此表单仅用于登录管理平台
+            br
+            | 下载凭据请直接在终端设备上操作
+          .mui-textfield.mui-textfield--float-label
+            input#f_un(type="text", name="un", required)
+            label 用户名
+          .mui-textfield.mui-textfield--float-label
+            input#f_pw(type="password", name="pw", required)
+            label 密码
+
+          button.mui-btn(type="submit") 提交
+block pscript
+  script.
+    $('#loginForm').submit(function () {
+      event.preventDefault()
+
+      var username = $('#f_un').val(), password = $('#f_pw').val();
+      $.post('/login', {
+        un: username,
+        pw: Sha256.hash(username + '>/<' + Sha256.hash(password) + '><' + username)
+      }, function (data) {
+        if (data.error) {
+          alert(data.error);
+        } else {
+          window.location.href = '/?rand=' + Math.random();
+        }
+      });
+    });

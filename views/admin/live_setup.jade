@@ -1,0 +1,61 @@
+extends ../layouts/admin
+block nav
+  | 赛事管理 > 赛场控制 > 新建比赛
+block main
+  .mui-row
+    .mui-col-lg-3
+      h3 设定列表
+      .mui-panel
+        ul.twt-list
+          each p in profiles
+            li
+              a(href='javascript:void(0)', data-json=p, id="profile-" + p.id, onclick="loadProfile("+p.id+")")=p.name
+    .mui-col-lg-9
+      .mui--text-title 步骤 1: 设置比赛信息和环节
+      p.mui--text-accent 您可以点击从左侧的设定列表中载入已经设置好的比赛信息。
+      .mui-panel
+        h3 比赛信息
+        .mui-textfield
+          input#f_ti(type="text", name="un", required)
+          label 比赛名称
+        .mui-textfield
+          input#f_re(type="text", name="re", required)
+          label 结果公式
+        h3 比赛流程
+        #procedure
+        button.mui-btn(type="button", onclick="makeProcedure()") 增加环节
+
+      .mui--text-title 步骤 2: 选择评委
+      p.mui--text-accent 请在下面选中本场比赛使用的评委账号
+      ul.mui-list--inline.mui--no-user-select#voterList
+        if voters.length > 0
+          each v in voters
+            li
+              .mui-panel(data-id=v.id, style="cursor:pointer;width:180px", onclick="$(this).toggleClass('selected')")
+                .wrap
+                  .mui--text-title=v.nickname
+                  .mui--text-dark-secondary ID: #{v.id} - #{v.username}
+                  .mui--text-dark-secondary 设备ID #{v.password||'Unknown'}
+      .mui--text-title 步骤 3: 选择选手
+      p.mui--text-accent 请在下面选中参与本场比赛的选手（默认选中所有未出局的选手）
+      ul.mui-list--inline.mui--no-user-select#playerList
+        if players.length > 0
+          each p in players
+            li
+              .mui-panel(data-id=p.id, style="cursor:pointer", onclick="$(this).toggleClass('selected')", class=p.enabled ? 'selected' : 'out')
+                img.avatar.avatar-50.mui--pull-left(src=p.photo)
+                .wrap.player-wrap
+                  .mui--text-title=p.name
+                  .mui--text-dark-secondary #{p.no} 号 - #{p.school}
+      .mui--text-title 步骤 4: 确认并提交
+      p.mui--text-accent 请阅读以下内容后提交
+      .mui-panel
+        p 1. 比赛信息不提供修改功能，必须重新建立比赛。
+        p 2. 只有选定的评委才能参与本次比赛的评委工作。
+          br
+          | 在比赛建立后删除评委账号或改变账号类型将使对应的评委账号无法连接，但重新下载凭证不会对连接造成影响。
+        button.mui-btn.mui-btn--danger(onclick="submitLive()") 提交
+
+block script
+  script.
+    G.call(['global/procedure', 'live/setup']);

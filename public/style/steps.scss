@@ -1,0 +1,20 @@
+@mixin step ($i) {
+  @if $i > 0 {
+    @include step($i - 1);
+    .step-#{$i} {
+      opacity: 0;
+      transform: translateX(-20px);
+
+      transition: opacity .6s linear, transform .6s linear;
+    }
+    .step-#{$i}, .step-#{$i} > * {
+      transition-delay: ($i - 1) * .3s !important;
+    }
+
+    .panel.active .step-#{$i} {
+      opacity: 1;
+      transform: translateX(0px);
+    }
+  }
+}
+@include step(13);

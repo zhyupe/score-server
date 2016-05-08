@@ -1,0 +1,71 @@
+extends ../layouts/admin
+block nav
+  | 配置管理 > 用户管理
+block main
+  .mui-row
+    .mui-col-lg-3
+      .mui-panel
+        form#userForm(action="/user", method="post")
+          legend#userNew 新建用户
+          #userEdit(style="display:none")
+            legend 编辑用户
+              a.mui--pull-right(href='javascript:void(0)', onclick="setUserWrap()", style="font-size:16px") 取消编辑
+            p.mui--text-accent 如不修改密码，请将 密码 栏留空
+          input#f_id(type="hidden")
+          .mui-textfield
+            input#f_un(type="text", name="un", required)
+            label 用户名
+          .mui-textfield
+            input#f_nn(type="text", name="un", required)
+            label 显示名
+          .mui-textfield
+            .mui-dropdown
+              input#f_uth(type="hidden")
+              button.mui-btn(type="button", data-mui-toggle="dropdown")
+                span#f_ut 请选择
+                | &nbsp;
+                span.mui-caret
+              ul.mui-dropdown__menu
+                li
+                  a(href="javascript:void(0)", onclick="setUserType(1, '管理员')") 管理员
+                li
+                  a(href="javascript:void(0)", onclick="setUserType(2, '评委')") 评委
+                li
+                  a(href="javascript:void(0)", onclick="setUserType(3, '展示员')") 展示员
+            label 类型
+          #pw_on.mui-textfield
+            input#f_pw(type="password", name="pw")
+            label 密码
+          p#pw_off.mui--text-accent(style="display:none") 评委账号不支持设置密码，需由管理员在终端上下载凭证
+
+          button.mui-btn(type="submit") 提交
+    .mui-col-lg-9
+      .mui-panel
+        table.mui-table.mui-table--bordered
+          thead
+            tr
+              th &nbsp;
+              th ID
+              th 类型
+              th 设备ID
+              th 登录名
+              th 显示名
+              th 操作
+          tbody
+            each u in users
+              tr
+                td
+                  input.p-sl(type='checkbox', data-id=u.id)
+                td.p-id=u.id
+                td.p-type(data-id=u.type)=['', '管理员', '评委', '展示员'][u.type]
+                td=(u.type == 2 ? u.password : '')
+                td.p-un=u.username
+                td.p-nn=u.nickname
+                td
+                  - var userArr = {id: u.id, username: u.username, nickname:u.nickname, type:u.type, typename: ['', '管理员', '评委', '展示员'][u.type]}
+                  a(href="javascript:void(0)", data-json=userArr, onclick="setUserWrap($(this).data('json'))") 编辑
+                  | &nbsp;
+                  a(href="javascript:void(0)", onclick="delUser("+u.id+")") 删除
+block script
+  script.
+    G.call('user');

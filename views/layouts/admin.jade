@@ -1,0 +1,53 @@
+extends public
+
+block content
+  #sidedrawer.mui--no-user-select
+    #sidedrawer-brand.mui--appbar-line-height.mui--text-title VoteApp
+    .mui-divider
+    ul
+      li
+        strong 赛事管理
+        ul
+          li
+            a(href='/profile') 比赛设定
+          li
+            a(href='/live') 赛场控制
+          li
+            a(href='/history') 评分历史
+      li
+        strong 配置管理
+        ul
+          li
+            a(href='/user') 用户管理
+          li
+            a(href='/player') 选手管理
+      li
+        strong 系统功能
+        ul
+          li
+            a(href='#') 退出登录
+
+  header#header
+    .mui-appbar.mui--appbar-line-height.mui-container-fluid
+      a.sidedrawer-toggle.mui--visible-xs-inline-block.mui--visible-sm-inline-block.js-show-sidedrawer ☰
+      a.sidedrawer-toggle.mui--hidden-xs.mui--hidden-sm.js-hide-sidedrawer ☰
+      span.mui--text-title
+        block nav
+  #content-wrapper
+    .mui--appbar-height
+    .mui-container(style="padding-top:10px")
+      block main
+  footer#footer
+    .mui-container-fluid
+      br
+      | By Zhyupe @&nbsp;
+      a(href='http://www.twt.edu.cn') TwT
+      | &nbsp;/&nbsp;&copy; 2016
+
+block pscript
+  script(type="text/javascript", src="/script/helper.js")
+  script(type="text/javascript", src="/script/public.js")
+  script.
+    G.token = '#{user.token}';
+    G.call('global/side');
+  block script

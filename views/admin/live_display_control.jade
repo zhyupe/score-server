@@ -1,0 +1,93 @@
+extends ../layouts/public
+block content
+  #controlWrap.mui-container
+    .mui-row
+      .mui-col-lg-3
+        .mui--text-danger(v-show="disconnect.code")
+          h3.mui--text-danger 连接已断开
+          .mui-panel
+            p 代码：{{disconnect.code}}
+            p 原因：{{disconnect.reason}}
+            button.mui-btn.mui-btn--danger(@click="initSocket()") 重新连接
+        h3 展示控制
+        .mui-panel
+          div
+            .mui-btn.mui-btn--flat(@click="showScreen('-')") 上一屏幕
+            .mui-btn.mui-btn--flat.mui-btn--primary(@click="showScreen('+')") 下一屏幕
+          div
+            .mui-btn.mui-btn--flat(@click="showScreen(-1)") 标题屏幕
+            .mui-btn.mui-btn--flat(@click="editScreen(-1)") 新建屏幕
+          div
+            .mui-btn.mui-btn--danger(:class="{'mui-btn--flat': !intercept}", @click="toggleIntercept()")
+              span(v-show="!intercept") 拦截模式
+              span(v-else) 停止拦截
+            .mui-btn.mui-btn--accent(:class="{'mui-btn--flat': !auto}", @click = "toggleAuto()")
+              span(v-show="!auto") 自动播放
+              span(v-else) 停止播放
+        h3 内容列表
+        .mui-panel
+          ul.twt-list
+            li(:class="{'mui--text-accent': screen === -1}") 标题屏幕
+            li(v-for="p in displayList", track-by="$index", :class="{'mui--text-accent': screen === $index}", @click="editing = p") {{p | parseDisplay}}
+      .mui-col-lg-9
+        h3 {{editing | parseDisplay}}
+        .mui-panel
+          .mui-row
+            .mui-col-sm-3
+              .mui-textfield
+                .mui-dropdown
+                  button.mui-btn(type="button", data-mui-toggle="dropdown") {{editing.type | parseDisplay 'type'}}&nbsp;
+                    span.mui-caret
+                  ul.mui-dropdown__menu
+                    li
+                      a(href="javascript:void(0)", @click="editing.type='score'") 得分
+                    li
+                      a(href="javascript:void(0)", @click="editing.type='html'") 内容
+                label 内容类型
+
+              button.mui-btn.mui-btn--primary(v-if="editing.new", @click="pushEditing()") 提交
+              button.mui-btn.mui-btn--primary(v-else, @click="showEditing()") 显示
+            .mui-col-sm-9(v-show="editing.type=='score'")
+              .mui-row
+                .mui-col-xs-3
+                  img(:src="editing.photo", style="width:80px;height:120px;")
+                .mui-col-xs-4.mui-textfield
+                  input(type="text", v-model="editing.name", readonly)
+                  label 姓名
+                .mui-col-xs-5.mui-textfield
+                  input(type="text", v-model="editing.school", readonly)
+                  label 单位
+                .mui-col-xs-4.mui-textfield
+                  input(type="text", v-model="editing.no")
+                  label 编号
+                .mui-col-xs-5.mui-textfield
+                  input(type="text", v-model="editing.score")
+                  label 分数
+            .mui-col-sm-9(v-show="editing.type=='html'")
+              .mui-textfield
+                textarea(v-model="editing.html")
+                label 内容
+
+        h3 分数记录
+        .mui-panel
+          .mui-tabs__pane.mui--is-active#pane-score-r
+            table.mui-table.mui-table--bordered
+              thead
+                tr
+                  th 选手
+                  th(v-for="p in live.procedure", track-by="$index") {{p.name}}
+                  th 总分
+              tbody
+                tr(v-for="s in scoreList | orderBy 'result' -1", track-by="id")
+                  td {{{s.id | playerById 'list'}}}
+                  td(v-for="p in live.procedure", track-by="$index", @click="setPlayer(s.id, s.original[$index])", style="cursor:pointer") {{{s.computed[$index] | formatScore}}}
+                    .mui--text-dark-secondary 原始分: {{{s.original[$index] | formatScore}}}
+                  td {{s.result | formatScore}}
+block pscript
+  script(type="text/javascript", src="/script/helper.js")
+  script(type="text/javascript", src="/script/public.js")
+  script(src="/script/vue.min.js")
+  script.
+    var wsToken = '#{user.id}|#{user.token}';
+    var wsId = '#{parseInt(id)}';
+  script(src="/script/live.display.control.js")

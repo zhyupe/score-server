@@ -1,0 +1,49 @@
+extends ../layouts/admin
+block nav
+  | 配置管理 > 选手管理
+block main
+  .mui-row
+    .mui-col-lg-3
+      .mui-panel
+        form#playerForm(action="/player", method="post")
+          legend#playerNew 添加选手
+          #playerEdit(style="display:none")
+            legend 编辑选手
+              a.mui--pull-right(href='javascript:void(0)', onclick="setPlayerWrap()", style="font-size:16px") 取消编辑
+          input#f_id(type="hidden")
+          .mui--text-center
+            a(href="javascript:void(0)", onclick="$('#f_fp').click()")
+              img#f_ph.avatar.avatar-100(src="/notfound.jpg")
+            .mui--hide
+              input#f_fp(type='file', multiple="false", accept="image/png,image/jpeg", onchange="uploadFile(this.files)")
+              input#f_fh(type='hidden', value="/notfound.jpg")
+          .mui-textfield
+            input#f_un(type="text" required)
+            label 姓名
+          .mui-textfield
+            input#f_nn(type="text", required)
+            label 编号
+          .mui-textfield
+            input#f_sn(type="text", required)
+            label 学校
+
+          button.mui-btn(type="submit") 提交
+    .mui-col-lg-9
+      if players.length > 0
+        ul.mui-list--inline
+          each p in players
+            li
+              .mui-panel(class=p.enabled ? '' : 'out')
+                img.avatar.avatar-50.mui--pull-left(src=p.photo)
+                .player-wrap
+                  .mui--text-title=p.name
+                  .mui--text-dark-secondary #{p.no} 号 - #{p.school}
+                .btn-wrap
+                  button.mui-btn.mui-btn--flat(data-status=p.enabled, onclick="togglePlayer("+p.id+", this)")=p.enabled ? '标记出局' : '取消出局'
+                  button.mui-btn.mui-btn--flat(data-json=p, onclick="setPlayerWrap($(this).data('json'))") 编辑
+                  button.mui-btn.mui-btn--flat.mui-btn--danger(onclick="delPlayer("+p.id+")") 删除
+      else
+        | 还没有添加选手
+block script
+  script.
+    G.call('player');

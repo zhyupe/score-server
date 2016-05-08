@@ -1,0 +1,180 @@
+extends ../layouts/admin
+block nav
+  | 赛事管理 > 赛场控制 > 控制台
+block main
+  #controlWrap
+    h2 {{live.name}}
+    .mui-row
+      .mui-col-lg-3
+        h3 控制提示
+        .mui-panel
+          p(v-show="local.hint === 1") 当前没有正在评分的选手，请选择待评选手并点击【提交待评】
+            br
+            | （可使用【自动待评】，自动选择前三名待评选手并提交）
+          p(v-show="local.hint === 2") 点击得分列下的【提交】可保存评分
+            br
+            | 点击评委列下的【重评】可令对应评委重评
+            br
+            | 点击【本轮重评】可令所有评委重评
+          p(v-show="local.hint === 3") 本轮评分已结束
+            br
+            | 请点击【下一环节】继续比赛
+        h3 比赛控制
+        .mui-panel
+          div
+            .mui-btn.mui-btn--flat(@click='btnStepPrev()', :disabled='local.controlLock') 上一环节
+            .mui-btn.mui-btn--flat(@click='btnStepNext()', :disabled='local.controlLock') 下一环节
+          div
+            .mui-btn.mui-btn--flat.mui-btn--danger(@click='btnVotingReset()', :disabled='local.controlLock') 本轮重评
+            .mui-btn.mui-btn--flat.mui-btn--danger(@click='btnVotingEnd()', :disabled='local.controlLock') 本轮结束
+          div
+            .mui-btn.mui-btn--flat.mui-btn--primary(@click='btnToAuto()', :disabled='local.controlLock') 自动待评
+            .mui-btn.mui-btn--flat.mui-btn--primary(@click='btnToSubmit()', :disabled='local.controlLock') 提交待评
+        h3 打印确认表
+        .mui-panel
+          .mui-dropdown
+            button.mui-btn(type="button", data-mui-toggle="dropdown")
+              span#f_ut 请选择流程
+              | &nbsp;
+              span.mui-caret
+            ul.mui-dropdown__menu
+              li(v-for="p in live.procedure", track-by="$index", v-if="p.type == 1")
+                a(href="javascript:void(0)", @click="printConfirm($index)") {{p.name}}
+        h3 比赛流程
+        .mui-panel
+          ul.twt-list
+            li(:class="{'mui--text-accent': local.step === -1}")
+              i 开始
+            li(v-for="p in live.procedure", track-by="$index", :class="{'mui--text-accent': local.step === $index}")
+              | {{p.name}}
+            li
+              i 结束
+        h3 评委列表
+        .mui-panel
+          ul.twt-list
+            li(v-for="v in voter", track-by="id")
+              .wrap
+                .mui--text-title {{v.nickname}}
+                .mui--text-dark-secondary ID: {{v.id}} -
+                  span(v-show="v.status", style="color:#090") 已连接 ({{v.status}})
+                  span(v-else, style="color:#f60") 未连接或无响应
+                .mui--text-dark-secondary 设备ID {{v.device}}
+      .mui-col-lg-9
+        h3 正在评分的选手
+        ul.mui-list--inline.mui--no-user-select
+          li(v-for="p in votingList", track-by="id")
+            .mui-panel(:data-id='p.id')
+              img.avatar.avatar-50.mui--pull-left(:src='p.photo')
+              .wrap.player-wrap
+                .mui--text-title {{p.name}}
+                .mui--text-dark-secondary {{p.no}} 号 - {{p.school}}
+        .mui-panel
+          table.mui-table.mui-table--bordered(v-if="live.procedure[local.step].type == 1")
+            thead
+              tr
+                th 选手
+                th(v-for="v in voter", track-by="id") {{v.nickname}}
+                th 平均分
+                th 附加分
+                th 总分
+            tbody
+              tr(v-for="p in votingList", track-by="id")
+                td {{p.name}}
+                  .mui--text-dark-secondary {{p.school}}
+                td(v-for="r in p.score.score", track-by="$index") {{{r | formatVoterScore p.score.score}}}
+                td {{{p.score | formatAvgScore 'count'}}}
+                td
+                  .mui-textfield
+                    input(v-model="p.score.extra | formatExtra p.score.score")
+                td {{{p.score | formatResultScore}}}
+            tfoot
+              tr
+                td &nbsp;
+                td(v-for="v in voter", track-by="id")
+                  button.mui-btn.mui-btn--flat.mui-btn--danger(:data-id="v.id", @click="btnVotingReset(v.id)") 重评
+                td &nbsp;
+                td &nbsp;
+                td
+                  button.mui-btn.mui-btn--primary(@click="btnVotingSubmit()") 提交
+          table.mui-table.mui-table--bordered(v-else)
+            thead
+              tr
+                th 选手
+                th 得分
+                th 总分
+            tbody
+              tr(v-for="p in votingList", track-by="id")
+                td {{p.name}}
+                  .mui--text-dark-secondary {{p.school}}
+                td
+                  .mui-textfield
+                    input(v-model="p.score.extra | formatExtra p.score.score")
+                td {{{p.score | formatResultScore}}}
+            tfoot
+              tr
+                td &nbsp;
+                td &nbsp;
+                td
+                  button.mui-btn.mui-btn--primary(@click="btnVotingSubmit()") 提交
+
+        h3 待评分选手
+        ul#waitingPlayer.mui-list--inline.mui--no-user-select
+          li(v-for="p in playerToVote", track-by="id")
+            .mui-panel(:data-id="p.id", style="cursor:pointer", onclick="$(this).toggleClass('selected')")
+              img.avatar.avatar-50.mui--pull-left(:src="p.photo")
+              .wrap.player-wrap
+                .mui--text-title {{p.name}}
+                .mui--text-dark-secondary {{p.no}} 号 - {{p.school}}
+        h3 分数记录
+        .mui-panel
+          ul.mui-tabs__bar
+            li.mui--is-active
+              a(data-mui-toggle='tab', data-mui-controls='pane-score-r') 总分
+            li(v-for="p in live.procedure", track-by="$index")
+              a(data-mui-toggle='tab', :data-mui-controls="'pane-score-'+$index") {{p.name}}
+
+          .mui-tabs__pane.mui--is-active#pane-score-r
+            table.mui-table.mui-table--bordered
+              thead
+                tr
+                  th 选手
+                  th(v-for="p in live.procedure", track-by="$index") {{p.name}}
+                  th 总分
+              tbody
+                tr(v-for="s in resultList | orderBy 'result' -1", track-by="id")
+                  td {{{s.id | playerById 'list'}}}
+                  td(v-for="p in live.procedure", track-by="$index") {{{s.computed[$index] | formatScore}}}
+                    .mui--text-dark-secondary 原始分: {{{s.original[$index] | formatScore}}}
+                  td {{s.result | formatScore}}
+          .mui-tabs__pane(v-for="score in scoreList", track-by="$index", :id="'pane-score-'+$index")
+            table.mui-table.mui-table--bordered
+              thead(v-if="live.procedure[$index].type == 1")
+                tr
+                  th 选手
+                  th(v-for="v in voter", track-by="id") {{v.nickname}}
+                  th 平均分
+                  th 附加分
+                  th 总分
+              thead(v-else)
+                tr
+                  th 选手
+                  th(v-if="live.procedure[$index].type == 2") 总分
+                  th 折算分
+              tbody(v-if="live.procedure[$index].type == 1")
+                tr(v-for="s in score | orderBy 'result' -1", track-by="id")
+                  td {{{s.id | playerById 'list'}}}
+                  td(v-for="r in s.score", track-by="$index") {{{r | formatVoterScore s.score}}}
+                  td {{{s | formatAvgScore}}}
+                  td {{{s.extra | formatScore}}}
+                  td {{{s | formatResultScore}}}
+              tbody(v-else)
+                tr(v-for="s in score | orderBy 'result' -1", track-by="id")
+                  td {{{s.id | playerById 'list'}}}
+                  td(v-if="live.procedure[$parent.$index].type == 2") {{{s.result | formatScore}}}
+                  td {{{s.computed | formatScore}}}
+block script
+  script(src="/script/vue.min.js")
+  script.
+    var wsToken = '#{user.id}|#{user.token}';
+    var wsId = '#{parseInt(id)}';
+  script(src="/script/live.control.js")

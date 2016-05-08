@@ -1,0 +1,76 @@
+extends ../layouts/admin
+block nav
+  | 赛事管理 > 评分历史
+block main
+  .mui-row
+    .mui-col-lg-3
+      h3 比赛列表
+      .mui-panel
+        ul.twt-list
+          each l in lives
+            li
+              - l.setting = JSON.parse(l.setting)
+              a(id='live-' + l.id, href='/history#P' + l.id)=l.setting.name
+    #historyWrap.mui-col-lg-9(style='display:none')
+      h3 {{live.name}}
+      .mui-panel
+        button.mui-btn.mui-btn--primary(@click="genXlsx()") 导出为 Excel
+        .mui-dropdown(style="margin-left:20px")
+          button.mui-btn.mui-btn--primary(type="button", data-mui-toggle="dropdown")
+            span#f_ut 请选择流程
+            | &nbsp;
+            span.mui-caret
+          ul.mui-dropdown__menu
+            li(v-for="p in live.procedure", track-by="$index", v-if="p.type == 1")
+              a(href="javascript:void(0)", @click="printConfirm($index)") {{p.name}}
+        ul.mui-tabs__bar
+          li.mui--is-active
+            a(data-mui-toggle='tab', data-mui-controls='pane-score-r') 总分
+          li(v-for="p in live.procedure", track-by="$index")
+            a(data-mui-toggle='tab', :data-mui-controls="'pane-score-'+$index") {{p.name}}
+
+        .mui-tabs__pane.mui--is-active#pane-score-r
+          table.mui-table.mui-table--bordered
+            thead
+              tr
+                th 选手
+                th(v-for="p in live.procedure", track-by="$index") {{p.name}}
+                th 总分
+            tbody
+              tr(v-for="s in resultList | orderBy 'result' -1", track-by="id")
+                td {{{s.id | playerById 'list'}}}
+                td(v-for="p in live.procedure", track-by="$index") {{{s.computed[$index] | formatScore}}}
+                  .mui--text-dark-secondary 原始分: {{{s.original[$index] | formatScore}}}
+                td {{s.result | formatScore}}
+        .mui-tabs__pane(v-for="score in scoreList", track-by="$index", :id="'pane-score-'+$index")
+          table.mui-table.mui-table--bordered
+            thead(v-if="live.procedure[$index].type == 1")
+              tr
+                th 选手
+                th(v-for="v in voter", track-by="id") {{v.nickname}}
+                th 平均分
+                th 附加分
+                th 总分
+            thead(v-else)
+              tr
+                th 选手
+                th(v-if="live.procedure[$index].type == 2") 总分
+                th 折算分
+            tbody(v-if="live.procedure[$index].type == 1")
+              tr(v-for="s in score | orderBy 'result' -1", track-by="id")
+                td {{{s.id | playerById 'list'}}}
+                td(v-for="r in s.score", track-by="$index") {{{r | formatVoterScore s.score}}}
+                td {{{s | formatAvgScore}}}
+                td {{{s.extra | formatScore}}}
+                td {{{s | formatResultScore}}}
+            tbody(v-else)
+              tr(v-for="s in score | orderBy 'result' -1", track-by="id")
+                td {{{s.id | playerById 'list'}}}
+                td(v-if="live.procedure[$parent.$index].type == 2") {{{s.result | formatScore}}}
+                td {{{s.computed | formatScore}}}
+block script
+  script(src="/script/vue.min.js")
+  script(src="/script/xlsx.bundled.min.js")
+  script.
+    var wsToken = '#{user.token}';
+  script(src="/script/history.js")

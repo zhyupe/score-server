@@ -1,0 +1,31 @@
+extends ../layouts/admin
+block nav
+  | 赛事管理 > 比赛设定
+block main
+  .mui-row
+    .mui-col-lg-4
+      h3 设定列表
+      .mui-panel
+        button.mui-btn.mui-btn--primary(onclick="newProfile()") 新建设定
+        ul.twt-list
+          each p in profiles
+            li
+              a(id='profile-' + p.id, href='/profile#P' + p.id, data-json=p)=p.name
+    #proWrap.mui-col-lg-8(style='display:none')
+      .mui-panel
+        form#ctrlForm(action="/profile", method="post")
+          input#f_id(type="hidden")
+          h3 比赛信息
+          .mui-textfield
+            input#f_ti(type="text", name="un", required)
+            label 比赛名称
+          .mui-textfield
+            input#f_re(type="text", name="re", required)
+            label 结果公式
+          h3 比赛流程
+          #procedure
+          button.mui-btn(type="button", onclick="makeProcedure()") 增加环节
+          button.mui-btn(type="submit") 提交
+block script
+  script.
+    G.call(['global/procedure', 'profile']);

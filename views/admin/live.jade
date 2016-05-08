@@ -1,0 +1,45 @@
+extends ../layouts/admin
+block nav
+  | 赛事管理 > 赛场控制
+block main
+  .mui-row
+    .mui-col-md-4
+      .mui-panel
+        .mui--text-title 系统状态
+        if livePlay.length
+          each p in livePlay
+            p.mui--text-subhead 正在进行&nbsp;
+              span.mui--text-accent=p.livePlay.setting.name
+            if p.livePlay.manager
+              p.mui--text-dark-secondary 主持人 #{p.livePlay.manager.nickname} (ID: #{p.livePlay.manager.id})
+            else
+              p.mui--text-dark-secondary 暂时无人主持比赛
+            if p.livePlay.displayer
+              p.mui--text-dark-secondary 演示人 #{p.livePlay.displayer.nickname} (ID: #{p.livePlay.displayer.id})
+            else
+              p.mui--text-dark-secondary 暂时无人演示比赛
+            p.mui--text-dark-secondary 开始于 #{dateFormat(p.livePlay.timestamp)}
+            button.mui-btn.mui-btn--accent(onclick="window.location.href='/live/control?id=#{p.id}'") 接管比赛
+            button.mui-btn.mui-btn--primary(onclick="window.location.href='/live/display?id=#{p.id}'") 演示比赛
+
+        else
+          p.mui--text-subhead 没有正在进行的比赛
+      .mui-panel
+        .mui--text-title 建立新的比赛
+        p.mui--text-center
+          button.mui-btn.mui-btn--primary(onclick="window.location.href='/live/setup'") 新建比赛
+    .mui-col-md-8
+      .mui-panel
+        .mui--text-title 继续比赛
+        ul.twt-list
+          each p in lives
+            li
+              - p.setting = JSON.parse(p.setting)
+              a(href='javascript:void(0)', onclick='reloadProfile(' + p.id + ')')=p.setting.name
+              p.mui--text-dark-secondary
+               if p.finished
+                 span.mui--text-accent [已完成]
+               | 创建于 #{dateFormat(p.timestamp)}
+block script
+  script.
+    G.call('live');
